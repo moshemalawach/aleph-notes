@@ -7,6 +7,7 @@ import Link from '@tiptap/extension-link';
 import { useNotesStore } from '../../stores/notes';
 import { SyncService } from '../../services/sync';
 import NoteTitle from './NoteTitle';
+import ShareButton from '../ui/ShareButton';
 
 export default function NoteEditor() {
   const { currentNoteId, setCurrentNoteContent } = useNotesStore();
@@ -76,6 +77,9 @@ export default function NoteEditor() {
 
   return (
     <div className="max-w-3xl mx-auto px-8 py-8">
+      <div className="flex justify-end mb-4">
+        <ShareButton />
+      </div>
       <NoteTitle />
       <div className="mt-6">
         <EditorContent editor={editor} />
