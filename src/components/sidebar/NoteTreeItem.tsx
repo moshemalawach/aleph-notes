@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { NoteMetadata } from '../../types';
 import { useNotesStore } from '../../stores/notes';
-import { getChildren } from '../../services/notes';
+import { getChildren, getAllDescendantIds } from '../../services/notes';
+import { SyncService } from '../../services/sync';
+import ConfirmDialog from '../ui/ConfirmDialog';
 
 interface NoteTreeItemProps {
   note: NoteMetadata;
@@ -9,14 +11,30 @@ interface NoteTreeItemProps {
 }
 
 export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
-  const { notes, currentNoteId, setCurrentNoteId } = useNotesStore();
+  const { notes, currentNoteId, setCurrentNoteId, removeNote, updateNote } = useNotesStore();
   const [expanded, setExpanded] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const children = getChildren(notes, note.id);
   const hasChildren = children.length > 0;
   const isActive = currentNoteId === note.id;
 
+  const handleDelete = () => {
+    const descendants = getAllDescendantIds(notes, note.id);
+    [note.id, ...descendants].forEach((id) => removeNote(id));
+    if (note.parentId && notes[note.parentId]) {
+      updateNote(note.parentId, {
+        childIds: notes[note.parentId].childIds.filter((id) => id !== note.id),
+      });
+    }
+    if (currentNoteId === note.id || descendants.includes(currentNoteId ?? '')) {
+      setCurrentNoteId(null);
+    }
+    SyncService.scheduleSave();
+    setShowDeleteConfirm(false);
+  };
+
   return (
-    <div>
+    <div className="group relative">
       <button
         onClick={() => setCurrentNoteId(note.id)}
         className={`w-full flex items-center gap-1 px-2 py-1 text-sm rounded-md transition-colors ${
@@ -47,6 +65,16 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
         <span className="shrink-0">{note.properties.icon || '\u{1F4DD}'}</span>
         <span className="truncate">{note.title}</span>
       </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowDeleteConfirm(true);
+        }}
+        className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 px-1 py-0.5 text-xs text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-opacity"
+        title="Delete note"
+      >
+        ...
+      </button>
       {hasChildren && expanded && (
         <div>
           {children.map((child) => (
@@ -54,6 +82,13 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
           ))}
         </div>
       )}
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete note"
+        message={`Are you sure you want to delete "${note.title}"${hasChildren ? ' and all its children' : ''}? This action cannot be undone.`}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }
