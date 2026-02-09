@@ -5,6 +5,7 @@ import { getRootNotes, createNewNote } from '../../services/notes';
 import { SyncService } from '../../services/sync';
 import SearchBar from './SearchBar';
 import NoteTreeItem from './NoteTreeItem';
+import ExportButton from '../ui/ExportButton';
 
 export default function Sidebar() {
   const { notes, addNote, setCurrentNoteId } = useNotesStore();
@@ -56,6 +57,7 @@ export default function Sidebar() {
             </svg>
             New Note
           </button>
+          <ExportButton />
         </div>
       )}
     </aside>
