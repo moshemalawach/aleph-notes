@@ -1,11 +1,20 @@
 import AppShell from '../components/layout/AppShell';
+import Sidebar from '../components/sidebar/Sidebar';
+import { useNotesStore } from '../stores/notes';
 
 export default function HomePage() {
+  const { currentNoteId } = useNotesStore();
+
   return (
     <AppShell>
-      <div className="flex-1 flex items-center justify-center">
-        <p className="text-gray-500">Connect wallet to get started</p>
-      </div>
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto">
+        {!currentNoteId && (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-400 text-sm">Select a note or create a new one</p>
+          </div>
+        )}
+      </main>
     </AppShell>
   );
 }
