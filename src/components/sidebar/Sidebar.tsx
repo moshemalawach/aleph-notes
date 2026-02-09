@@ -1,3 +1,5 @@
+import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useNotesStore } from '../../stores/notes';
 import { useUIStore } from '../../stores/ui';
 import { useAuthStore } from '../../stores/auth';
@@ -9,7 +11,7 @@ import NoteTreeItem from './NoteTreeItem';
 import ExportButton from '../ui/ExportButton';
 
 export default function Sidebar() {
-  const { notes, addNote, setCurrentNoteId } = useNotesStore();
+  const { notes, addNote, setCurrentNoteId, updateNote } = useNotesStore();
   const { sidebarOpen, searchQuery, setSidebarOpen } = useUIStore();
   const { isInitialized } = useAuthStore();
   const isMobile = useIsMobile();
@@ -31,6 +33,22 @@ export default function Sidebar() {
     SyncService.scheduleSave();
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const items = searchQuery ? filteredRoots : rootNotes;
+    const oldIndex = items.findIndex((n) => n.id === active.id);
+    const newIndex = items.findIndex((n) => n.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(items, oldIndex, newIndex);
+    reordered.forEach((note, i) => {
+      updateNote(note.id, { order: i });
+    });
+    SyncService.scheduleSave();
+  };
+
   const sidebarInner = (
     <>
       <SearchBar />
@@ -44,9 +62,13 @@ export default function Sidebar() {
         {isInitialized && filteredRoots.length === 0 && searchQuery && (
           <p className="text-sm text-gray-400 px-2 py-4">No matching notes</p>
         )}
-        {filteredRoots.map((note) => (
-          <NoteTreeItem key={note.id} note={note} depth={0} />
-        ))}
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={filteredRoots.map(n => n.id)} strategy={verticalListSortingStrategy}>
+            {filteredRoots.map((note) => (
+              <NoteTreeItem key={note.id} note={note} depth={0} />
+            ))}
+          </SortableContext>
+        </DndContext>
       </div>
       {isInitialized && (
         <div className="border-t border-gray-200 dark:border-gray-700 p-3">

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { NoteMetadata } from '../../types';
 import { useNotesStore } from '../../stores/notes';
 import { useUIStore } from '../../stores/ui';
@@ -16,6 +18,11 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
   const { notes, currentNoteId, setCurrentNoteId, removeNote, updateNote } = useNotesStore();
   const { setSidebarOpen } = useUIStore();
   const isMobile = useIsMobile();
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: note.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
   const [expanded, setExpanded] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const children = getChildren(notes, note.id);
@@ -38,7 +45,7 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
   };
 
   return (
-    <div className="group relative">
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="group relative">
       <button
         onClick={() => {
           setCurrentNoteId(note.id);
