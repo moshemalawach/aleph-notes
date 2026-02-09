@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import type { NoteMetadata } from '../../types';
 import { useNotesStore } from '../../stores/notes';
+import { useUIStore } from '../../stores/ui';
 import { getChildren, getAllDescendantIds } from '../../services/notes';
 import { SyncService } from '../../services/sync';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 import ConfirmDialog from '../ui/ConfirmDialog';
 
 interface NoteTreeItemProps {
@@ -12,6 +14,8 @@ interface NoteTreeItemProps {
 
 export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
   const { notes, currentNoteId, setCurrentNoteId, removeNote, updateNote } = useNotesStore();
+  const { setSidebarOpen } = useUIStore();
+  const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const children = getChildren(notes, note.id);
@@ -36,7 +40,10 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
   return (
     <div className="group relative">
       <button
-        onClick={() => setCurrentNoteId(note.id)}
+        onClick={() => {
+          setCurrentNoteId(note.id);
+          if (isMobile) setSidebarOpen(false);
+        }}
         className={`w-full flex items-center gap-1 px-2 py-1 text-sm rounded-md transition-colors ${
           isActive
             ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'

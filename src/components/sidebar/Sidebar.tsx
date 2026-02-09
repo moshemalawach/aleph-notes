@@ -3,14 +3,16 @@ import { useUIStore } from '../../stores/ui';
 import { useAuthStore } from '../../stores/auth';
 import { getRootNotes, createNewNote } from '../../services/notes';
 import { SyncService } from '../../services/sync';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 import SearchBar from './SearchBar';
 import NoteTreeItem from './NoteTreeItem';
 import ExportButton from '../ui/ExportButton';
 
 export default function Sidebar() {
   const { notes, addNote, setCurrentNoteId } = useNotesStore();
-  const { sidebarOpen, searchQuery } = useUIStore();
+  const { sidebarOpen, searchQuery, setSidebarOpen } = useUIStore();
   const { isInitialized } = useAuthStore();
+  const isMobile = useIsMobile();
 
   if (!sidebarOpen) return null;
 
@@ -29,8 +31,8 @@ export default function Sidebar() {
     SyncService.scheduleSave();
   };
 
-  return (
-    <aside className="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0 overflow-hidden">
+  const sidebarInner = (
+    <>
       <SearchBar />
       <div className="flex-1 overflow-y-auto px-2 py-1">
         {!isInitialized && (
@@ -60,6 +62,23 @@ export default function Sidebar() {
           <ExportButton />
         </div>
       )}
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
+        <aside className="fixed left-0 top-12 bottom-0 w-64 bg-white dark:bg-gray-900 z-50 flex flex-col border-r border-gray-200 dark:border-gray-700">
+          {sidebarInner}
+        </aside>
+      </>
+    );
+  }
+
+  return (
+    <aside className="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0 overflow-hidden">
+      {sidebarInner}
     </aside>
   );
 }
