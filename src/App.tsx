@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import SharePage from './pages/SharePage';
+import { useTheme } from './hooks/useTheme';
 
 export default function App() {
+  useTheme();
+
   return (
     <BrowserRouter>
       <Routes>
