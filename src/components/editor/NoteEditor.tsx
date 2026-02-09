@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -8,8 +8,10 @@ import { useNotesStore } from '../../stores/notes';
 import { SyncService } from '../../services/sync';
 import NoteTitle from './NoteTitle';
 import ShareButton from '../ui/ShareButton';
+import VersionHistory from './VersionHistory';
 
 export default function NoteEditor() {
+  const [showHistory, setShowHistory] = useState(false);
   const { currentNoteId, setCurrentNoteContent } = useNotesStore();
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLoadingRef = useRef(false);
@@ -77,9 +79,16 @@ export default function NoteEditor() {
 
   return (
     <div className="max-w-3xl mx-auto px-8 py-8">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end gap-2 mb-4">
+        <button
+          onClick={() => setShowHistory(true)}
+          className="px-3 py-1.5 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          History
+        </button>
         <ShareButton />
       </div>
+      {showHistory && <VersionHistory onClose={() => setShowHistory(false)} />}
       <NoteTitle />
       <div className="mt-6">
         <EditorContent editor={editor} />
