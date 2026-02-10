@@ -31,6 +31,20 @@ export const AlephService = {
   },
 
   async setupPermissions(mainWalletAccount: ETHAccount, ephemeralAddress: string): Promise<void> {
+    // Check if the ephemeral key is already authorized
+    try {
+      const existing = await getPublicClient().fetchAggregate(
+        mainWalletAccount.address,
+        'security',
+      ) as { authorizations?: Array<{ address: string }> } | null;
+      const already = existing?.authorizations?.some(
+        (a) => a.address.toLowerCase() === ephemeralAddress.toLowerCase(),
+      );
+      if (already) return;
+    } catch {
+      // No security aggregate yet — proceed to create one
+    }
+
     const client = new AuthenticatedAlephHttpClient(mainWalletAccount);
     await client.createAggregate({
       key: 'security',
@@ -92,13 +106,15 @@ export const AlephService = {
 
   async getPost(hash: string): Promise<unknown> {
     const client = getPublicClient();
-    const result = await client.getMessages({
+    // Use the posts API which resolves amendments automatically
+    const result = await client.getPosts({
       hashes: [hash],
+      types: ['aleph-note'],
     });
-    if (result.messages.length === 0) {
+    if (result.posts.length === 0) {
       throw new Error(`Post not found: ${hash}`);
     }
-    return result.messages[0].content;
+    return result.posts[0].content;
   },
 
   async getPostHistory(originalRef: string): Promise<Array<{ hash: string; content: unknown; time: number }>> {
@@ -107,11 +123,14 @@ export const AlephService = {
       refs: [originalRef],
       channels: [ALEPH_CHANNEL],
     });
-    return result.messages.map((msg: any) => ({
-      hash: msg.item_hash as string,
-      content: msg.content as unknown,
-      time: msg.time as number,
-    }));
+    return result.messages.map((msg: any) => {
+      const c = msg.content;
+      return {
+        hash: msg.item_hash as string,
+        content: (c?.content ?? c) as unknown,
+        time: msg.time as number,
+      };
+    });
   },
 
   async uploadToStore(data: Uint8Array): Promise<string> {

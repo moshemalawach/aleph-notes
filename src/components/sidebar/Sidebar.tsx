@@ -1,4 +1,4 @@
-import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useNotesStore } from '../../stores/notes';
 import { useUIStore } from '../../stores/ui';
@@ -15,6 +15,9 @@ export default function Sidebar() {
   const { sidebarOpen, searchQuery, setSidebarOpen } = useUIStore();
   const { isInitialized } = useAuthStore();
   const isMobile = useIsMobile();
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  );
 
   if (!sidebarOpen) return null;
 
@@ -64,7 +67,7 @@ export default function Sidebar() {
         {emptyMessage && (
           <p className="text-[13px] text-ink-muted px-3 py-6 text-center font-body">{emptyMessage}</p>
         )}
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={filteredRoots.map(n => n.id)} strategy={verticalListSortingStrategy}>
             {filteredRoots.map((note, i) => (
               <div

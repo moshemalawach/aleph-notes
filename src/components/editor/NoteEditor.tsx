@@ -96,7 +96,9 @@ export default function NoteEditor() {
       const noteId = currentNoteIdRef.current;
       if (noteId) {
         saveTimerRef.current = setTimeout(() => {
-          SyncService.saveNoteContent(noteId, html);
+          SyncService.saveNoteContent(noteId, html).catch((err) => {
+            console.error('Failed to save note content:', err);
+          });
         }, 1500);
       }
     },
