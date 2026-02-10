@@ -26,21 +26,22 @@ export default function ConfirmDialog({ open, title, message, confirmLabel = 'De
     <dialog
       ref={dialogRef}
       onClose={onCancel}
-      className="rounded-lg p-0 backdrop:bg-black/50 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+      className="rounded-xl p-0 border border-edge bg-elevated text-ink"
+      style={{ boxShadow: 'var(--c-shadow-lg)' }}
     >
       <div className="p-6 max-w-sm">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{message}</p>
-        <div className="mt-4 flex justify-end gap-2">
+        <h3 className="text-base font-display font-semibold">{title}</h3>
+        <p className="mt-2.5 text-[13px] text-ink-secondary leading-relaxed font-body">{message}</p>
+        <div className="mt-5 flex justify-end gap-2">
           <button
             onClick={onCancel}
-            className="px-3 py-1.5 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="px-4 py-2 text-[13px] font-medium rounded-lg hover:bg-hover transition-all duration-200 font-body"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-3 py-1.5 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+            className="px-4 py-2 text-[13px] font-medium rounded-lg bg-danger text-white hover:bg-danger-hover transition-all duration-200 font-body"
           >
             {confirmLabel}
           </button>

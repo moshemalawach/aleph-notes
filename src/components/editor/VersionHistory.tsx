@@ -57,37 +57,48 @@ export default function VersionHistory({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Version History</h2>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <div className="fixed inset-0 bg-overlay backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-elevated border border-edge rounded-xl w-full max-w-lg max-h-[80vh] flex flex-col animate-fade-in-scale" style={{ boxShadow: 'var(--c-shadow-lg)' }}>
+        <div className="p-5 border-b border-edge flex items-center justify-between">
+          <h2 className="text-base font-display font-semibold text-ink">Version History</h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-hover transition-all duration-200"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          {loading && <p className="text-gray-400 text-sm">Loading history...</p>}
+          {loading && (
+            <div className="flex items-center gap-2 py-6 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <p className="text-ink-muted text-[13px] font-body">Loading history...</p>
+            </div>
+          )}
           {!loading && versions.length === 0 && (
-            <p className="text-gray-400 text-sm">No version history available</p>
+            <p className="text-ink-muted text-[13px] text-center py-6 font-body">No version history available</p>
           )}
           {versions.map((v) => (
-            <div key={v.hash} className="mb-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div
+              key={v.hash}
+              className="mb-2 p-3 rounded-lg border border-edge hover:border-edge-strong transition-colors duration-150"
+            >
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
+                <span className="text-[13px] text-ink-secondary font-body">
                   {formatDistanceToNow(new Date(v.time * 1000), { addSuffix: true })}
                 </span>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     onClick={() => setPreviewContent(v.content)}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-xs text-accent hover:text-accent-hover transition-colors font-body"
                   >
                     Preview
                   </button>
                   <button
                     onClick={() => handleRestore(v)}
-                    className="text-xs text-green-600 dark:text-green-400 hover:underline"
+                    className="text-xs text-accent hover:text-accent-hover transition-colors font-body"
                   >
                     Restore
                   </button>
@@ -97,9 +108,9 @@ export default function VersionHistory({ onClose }: { onClose: () => void }) {
           ))}
         </div>
         {previewContent !== null && (
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 max-h-48 overflow-y-auto">
+          <div className="border-t border-edge p-4 max-h-48 overflow-y-auto">
             <div
-              className="prose dark:prose-invert max-w-none text-sm"
+              className="share-prose text-[13px] text-ink-secondary font-body leading-relaxed"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewContent) }}
             />
           </div>

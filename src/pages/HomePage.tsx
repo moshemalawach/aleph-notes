@@ -13,8 +13,20 @@ export default function HomePage() {
         {currentNoteId ? (
           <NoteEditor />
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400 text-sm">Select a note or create a new one</p>
+          <div className="flex flex-col items-center justify-center h-full select-none">
+            {/* The Aleph — a point containing all points */}
+            <span
+              className="text-[12rem] leading-none font-display text-accent"
+              style={{
+                animation: 'aleph-breathe 6s ease-in-out infinite',
+                fontWeight: 500,
+              }}
+            >
+              &#x2135;
+            </span>
+            <p className="mt-6 text-ink-muted text-sm tracking-wide font-body">
+              Select a note or create a new one
+            </p>
           </div>
         )}
       </main>

@@ -60,9 +60,12 @@ export default function ConnectWalletButton() {
     return (
       <button
         onClick={handleDisconnect}
-        className="px-3 py-1.5 text-sm rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-body rounded-lg border border-edge hover:border-edge-strong bg-surface hover:bg-hover transition-all duration-200"
       >
-        {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+        <span className="w-2 h-2 rounded-full bg-accent" />
+        <span className="text-ink-secondary">
+          {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+        </span>
       </button>
     );
   }
@@ -71,9 +74,16 @@ export default function ConnectWalletButton() {
     <button
       onClick={handleConnect}
       disabled={isConnecting}
-      className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+      className="relative px-4 py-2 text-[13px] font-medium font-body rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-50 transition-all duration-200 overflow-hidden"
     >
-      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+      {isConnecting ? (
+        <span className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" />
+          Connecting...
+        </span>
+      ) : (
+        'Connect Wallet'
+      )}
     </button>
   );
 }

@@ -51,12 +51,12 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
           setCurrentNoteId(note.id);
           if (isMobile) setSidebarOpen(false);
         }}
-        className={`w-full flex items-center gap-1 px-2 py-1 text-sm rounded-md transition-colors ${
+        className={`w-full flex items-center gap-1.5 px-2.5 py-[7px] text-[13px] rounded-lg transition-all duration-150 font-body ${
           isActive
-            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-            : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+            ? 'bg-accent-soft text-accent border-l-2 border-accent'
+            : 'hover:bg-hover text-ink-secondary hover:text-ink'
         }`}
-        style={{ paddingLeft: `${depth * 16 + 8}px` }}
+        style={{ paddingLeft: `${depth * 16 + 10}px` }}
       >
         {hasChildren && (
           <span
@@ -64,10 +64,10 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
               e.stopPropagation();
               setExpanded(!expanded);
             }}
-            className="w-4 h-4 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 cursor-pointer"
+            className="w-4 h-4 flex items-center justify-center text-ink-ghost hover:text-ink-secondary shrink-0 cursor-pointer transition-colors"
           >
             <svg
-              className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
+              className={`w-3 h-3 transition-transform duration-200 ${expanded ? 'rotate-90' : ''}`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -76,7 +76,7 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
           </span>
         )}
         {!hasChildren && <span className="w-4 shrink-0" />}
-        <span className="shrink-0">{note.properties.icon || '\u{1F4DD}'}</span>
+        <span className="shrink-0 text-sm">{note.properties.icon || '\u{1F4DD}'}</span>
         <span className="truncate">{note.title}</span>
       </button>
       <button
@@ -84,10 +84,12 @@ export default function NoteTreeItem({ note, depth }: NoteTreeItemProps) {
           e.stopPropagation();
           setShowDeleteConfirm(true);
         }}
-        className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 px-1 py-0.5 text-xs text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-opacity"
+        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded text-ink-ghost hover:text-danger hover:bg-hover transition-all duration-150"
         title="Delete note"
       >
-        ...
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
       {hasChildren && expanded && (
         <div>

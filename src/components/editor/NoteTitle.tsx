@@ -27,7 +27,7 @@ export default function NoteTitle() {
       defaultValue={note.title}
       onChange={handleChange}
       placeholder="Untitled"
-      className="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-gray-300 dark:placeholder-gray-600"
+      className="w-full text-[2.25rem] font-display font-semibold bg-transparent border-none outline-none text-ink placeholder:text-ink-ghost leading-tight tracking-tight"
     />
   );
 }

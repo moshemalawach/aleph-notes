@@ -64,37 +64,61 @@ export default function SharePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
-        <p className="text-gray-500">Loading shared note...</p>
+      <div className="noise-bg min-h-screen bg-canvas flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 animate-fade-in">
+          <span
+            className="text-5xl font-display text-accent"
+            style={{ animation: 'aleph-breathe 3s ease-in-out infinite' }}
+          >
+            &#x2135;
+          </span>
+          <p className="text-ink-muted text-sm font-body">Decrypting shared note...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
-        <p className="text-red-500">{error}</p>
+      <div className="noise-bg min-h-screen bg-canvas flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <span className="text-6xl font-display text-ink-ghost block mb-4">&#x2135;</span>
+          <p className="text-danger text-sm font-body">{error}</p>
+        </div>
       </div>
     );
   }
 
-  // Content is sanitized via DOMPurify (sanitizeHtml) to prevent XSS
   const sanitizedContent = sanitizeHtml(content);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <div className="max-w-3xl mx-auto px-8 py-12">
-        <div className="mb-6">
-          <span className="text-sm text-gray-400">Shared via Aleph Notes</span>
+    <div className="noise-bg min-h-screen bg-canvas text-ink">
+      <div
+        className="pointer-events-none fixed inset-0"
+        style={{ background: 'var(--c-gradient-subtle)' }}
+      />
+      <div className="relative max-w-2xl mx-auto px-8 py-16 animate-fade-in">
+        <div className="flex items-center gap-2 mb-10">
+          <span className="text-accent font-display text-lg">&#x2135;</span>
+          <span className="text-ink-muted text-xs tracking-widest uppercase font-body">
+            Shared via Aleph Notes
+          </span>
         </div>
-        <h1 className="text-3xl font-bold mb-6">{title}</h1>
+        <h1 className="font-display text-4xl font-semibold mb-8 leading-tight">{title}</h1>
         <div
-          className="prose dark:prose-invert max-w-none"
+          className="share-prose prose max-w-none text-ink-secondary leading-relaxed font-body"
           dangerouslySetInnerHTML={{ __html: sanitizedContent }}
         />
-        <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <a href="/" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-            Open in Aleph Notes
+        <div className="mt-16 pt-6 border-t border-edge">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-accent hover:text-accent-hover transition-colors font-body"
+          >
+            <span className="font-display">&#x2135;</span>
+            <span>Open in Aleph Notes</span>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+            </svg>
           </a>
         </div>
       </div>

@@ -35,7 +35,7 @@ export default function NoteEditor() {
     content: '',
     editorProps: {
       attributes: {
-        class: 'prose dark:prose-invert max-w-none focus:outline-none min-h-[200px]',
+        class: 'focus:outline-none min-h-[300px]',
       },
     },
     onUpdate: ({ editor }) => {
@@ -78,19 +78,29 @@ export default function NoteEditor() {
   if (!currentNoteId) return null;
 
   return (
-    <div className="max-w-3xl mx-auto px-8 py-8">
-      <div className="flex justify-end gap-2 mb-4">
+    <div className="max-w-2xl mx-auto px-10 py-10 animate-fade-in">
+      {/* Toolbar */}
+      <div className="flex justify-end gap-1 mb-8">
         <button
           onClick={() => setShowHistory(true)}
-          className="px-3 py-1.5 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-lg text-ink-muted hover:text-ink hover:bg-hover transition-all duration-200 font-body"
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           History
         </button>
         <ShareButton />
       </div>
+
       {showHistory && <VersionHistory onClose={() => setShowHistory(false)} />}
+
       <NoteTitle />
-      <div className="mt-6">
+
+      {/* Divider */}
+      <div className="h-px bg-edge my-6" />
+
+      <div className="font-body">
         <EditorContent editor={editor} />
       </div>
     </div>

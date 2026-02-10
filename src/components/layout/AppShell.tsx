@@ -3,9 +3,14 @@ import Header from './Header';
 
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="noise-bg flex flex-col h-screen bg-canvas text-ink">
+      {/* Subtle ambient gradient */}
+      <div
+        className="pointer-events-none fixed inset-0"
+        style={{ background: 'var(--c-gradient-subtle)' }}
+      />
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden">
         {children}
       </div>
     </div>

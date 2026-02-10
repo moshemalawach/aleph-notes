@@ -1,2 +1,324 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/* ================================================
+   ALEPH NOTES — "Luminous Void" Design System
+   ================================================ */
+
+/* --- Semantic Color Tokens (Light) --- */
+:root {
+  --c-bg: #faf9f6;
+  --c-bg-surface: #ffffff;
+  --c-bg-elevated: #ffffff;
+  --c-bg-hover: #f0efeb;
+  --c-bg-active: #e8e7e2;
+  --c-bg-sidebar: #f4f3ef;
+
+  --c-edge: rgba(0, 0, 0, 0.08);
+  --c-edge-strong: rgba(0, 0, 0, 0.14);
+
+  --c-ink: #1a1a2e;
+  --c-ink-secondary: #4a4a60;
+  --c-ink-muted: #8080a0;
+  --c-ink-ghost: #b8b8cc;
+
+  --c-accent: #00a87d;
+  --c-accent-hover: #009670;
+  --c-accent-soft: rgba(0, 168, 125, 0.08);
+  --c-accent-edge: rgba(0, 168, 125, 0.30);
+
+  --c-danger: #dc3545;
+  --c-danger-hover: #c82333;
+
+  --c-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --c-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --c-glow: none;
+  --c-glow-accent: none;
+  --c-overlay: rgba(0, 0, 0, 0.4);
+  --c-noise-opacity: 0.02;
+  --c-gradient-subtle: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0, 168, 125, 0.03), transparent);
+}
+
+/* --- Semantic Color Tokens (Dark) --- */
+.dark {
+  --c-bg: #0a0a12;
+  --c-bg-surface: #111119;
+  --c-bg-elevated: #1a1a25;
+  --c-bg-hover: #222230;
+  --c-bg-active: #2a2a3a;
+  --c-bg-sidebar: #08080e;
+
+  --c-edge: rgba(255, 255, 255, 0.06);
+  --c-edge-strong: rgba(255, 255, 255, 0.12);
+
+  --c-ink: #e2e2ea;
+  --c-ink-secondary: #9494a8;
+  --c-ink-muted: #5c5c72;
+  --c-ink-ghost: #34344a;
+
+  --c-accent: #00d4aa;
+  --c-accent-hover: #00ebbd;
+  --c-accent-soft: rgba(0, 212, 170, 0.07);
+  --c-accent-edge: rgba(0, 212, 170, 0.22);
+
+  --c-danger: #ff4d6a;
+  --c-danger-hover: #ff6680;
+
+  --c-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --c-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --c-glow: 0 0 60px rgba(0, 212, 170, 0.04);
+  --c-glow-accent: 0 0 20px rgba(0, 212, 170, 0.15);
+  --c-overlay: rgba(0, 0, 0, 0.7);
+  --c-noise-opacity: 0.03;
+  --c-gradient-subtle: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0, 212, 170, 0.03), transparent 70%);
+}
+
+/* --- Tailwind Theme Registration --- */
+@theme {
+  --color-canvas: var(--c-bg);
+  --color-surface: var(--c-bg-surface);
+  --color-elevated: var(--c-bg-elevated);
+  --color-hover: var(--c-bg-hover);
+  --color-active: var(--c-bg-active);
+  --color-sidebar: var(--c-bg-sidebar);
+
+  --color-edge: var(--c-edge);
+  --color-edge-strong: var(--c-edge-strong);
+
+  --color-ink: var(--c-ink);
+  --color-ink-secondary: var(--c-ink-secondary);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-ghost: var(--c-ink-ghost);
+
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-edge: var(--c-accent-edge);
+
+  --color-danger: var(--c-danger);
+  --color-danger-hover: var(--c-danger-hover);
+
+  --color-overlay: var(--c-overlay);
+
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* --- Base Styles --- */
+html {
+  font-family: var(--font-display, "DM Sans", sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--c-bg);
+  color: var(--c-ink);
+}
+
+/* --- Noise Texture Overlay --- */
+.noise-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: var(--c-noise-opacity);
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-ink-ghost);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-ink-muted);
+}
+
+/* --- Animations --- */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-scale {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes aleph-breathe {
+  0%, 100% { opacity: 0.06; transform: scale(1) translateY(0); }
+  50% { opacity: 0.10; transform: scale(1.01) translateY(-2px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 212, 170, 0.15); }
+  50% { box-shadow: 0 0 20px rgba(0, 212, 170, 0.25); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale 0.3s ease-out both;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out both;
+}
+
+/* --- Tiptap Editor Styles --- */
+.ProseMirror {
+  outline: none;
+  min-height: 200px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--c-ink);
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--c-ink-ghost);
+  font-style: italic;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  font-family: var(--font-display, "Newsreader", serif);
+  font-weight: 600;
+  color: var(--c-ink);
+  line-height: 1.3;
+}
+
+.ProseMirror h1 { font-size: 1.75rem; margin-top: 2rem; margin-bottom: 0.75rem; }
+.ProseMirror h2 { font-size: 1.35rem; margin-top: 1.75rem; margin-bottom: 0.6rem; }
+.ProseMirror h3 { font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+
+.ProseMirror p {
+  margin-bottom: 0.75rem;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.25rem;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid var(--c-accent);
+  padding-left: 1rem;
+  color: var(--c-ink-secondary);
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.ProseMirror code {
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-edge);
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.875em;
+}
+
+.ProseMirror pre {
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-edge);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.ProseMirror pre code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.ProseMirror a {
+  color: var(--c-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--c-edge);
+  margin: 2rem 0;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+/* --- Share Page Prose --- */
+.share-prose h1,
+.share-prose h2,
+.share-prose h3 {
+  font-family: var(--font-display, "Newsreader", serif);
+  font-weight: 600;
+}
+
+/* --- Selection --- */
+::selection {
+  background: var(--c-accent-soft);
+  color: var(--c-ink);
+}
+
+/* --- Focus Visible --- */
+*:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- Dialog Backdrop --- */
+dialog::backdrop {
+  background: var(--c-overlay);
+  backdrop-filter: blur(4px);
+}
