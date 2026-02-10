@@ -3,6 +3,7 @@ import { useNotesStore } from '../../stores/notes';
 import { WalletService } from '../../services/wallet';
 import { CryptoService } from '../../services/crypto';
 import { AlephService } from '../../services/aleph';
+import { getAccountFromProvider } from '@aleph-sdk/ethereum';
 import type { NotesAggregate, EncryptedPayload } from '../../types';
 
 export default function ConnectWalletButton() {
@@ -33,6 +34,10 @@ export default function ConnectWalletButton() {
       const ephemeralPrivateKey = CryptoService.deriveEphemeralPrivateKey(signature);
       const ephemeralAddr = await AlephService.initializeWithEphemeralKey(ephemeralPrivateKey, address);
       setEphemeralAddress(ephemeralAddr);
+
+      // Authorize ephemeral key to write on behalf of main wallet
+      const mainAccount = await getAccountFromProvider(window.ethereum);
+      await AlephService.setupPermissions(mainAccount, ephemeralAddr);
 
       const raw = await AlephService.fetchAggregate();
       if (raw) {

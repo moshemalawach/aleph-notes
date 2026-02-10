@@ -12,8 +12,9 @@ export const WalletService = {
     if (!window.ethereum) {
       throw new Error('No Ethereum wallet found. Please install MetaMask.');
     }
+    // Request accounts first, then create provider — avoids stale provider issues on reconnect
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new providers.Web3Provider(window.ethereum);
-    await provider.send('eth_requestAccounts', []);
     const signer = provider.getSigner();
     const address = await signer.getAddress();
     return { address, signer };

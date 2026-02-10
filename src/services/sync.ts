@@ -43,18 +43,22 @@ export const SyncService = {
     const note = useNotesStore.getState().notes[noteId];
     if (!note) return null;
     const encrypted = await CryptoService.encrypt({ markdown: content }, key);
-    let hash: string;
-    if (note.currentPostRef) {
-      hash = await AlephService.amendPost(note.currentPostRef, encrypted);
+    let originalRef = note.currentPostRef;
+    const isNew = !originalRef;
+    if (originalRef) {
+      await AlephService.amendPost(originalRef, encrypted);
     } else {
-      hash = await AlephService.createPost(encrypted);
+      originalRef = await AlephService.createPost(encrypted);
     }
     useNotesStore.getState().updateNote(noteId, {
-      currentPostRef: hash,
+      currentPostRef: originalRef,
       properties: { ...note.properties, modified: Date.now() },
     });
-    SyncService.scheduleSave();
-    return hash;
+    // Only save aggregate when a new post is created (need to persist the ref)
+    if (isNew) {
+      SyncService.scheduleSave();
+    }
+    return originalRef;
   },
 
   async loadNoteContent(noteId: string): Promise<string | null> {
