@@ -296,6 +296,157 @@ body {
   margin: 1rem 0;
 }
 
+/* --- Task List --- */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] {
+  appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--c-ink-ghost);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+}
+
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div > p {
+  text-decoration: line-through;
+  color: var(--c-ink-muted);
+}
+
+/* Nested task lists */
+.ProseMirror ul[data-type="taskList"] ul[data-type="taskList"] {
+  padding-left: 1.5rem;
+}
+
+/* --- Tables --- */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--c-edge);
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid var(--c-edge);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  min-width: 80px;
+}
+
+.ProseMirror th {
+  background: var(--c-bg-elevated);
+  font-weight: 600;
+  font-size: 0.875em;
+  color: var(--c-ink-secondary);
+}
+
+.ProseMirror td {
+  background: var(--c-bg-surface);
+}
+
+.ProseMirror .selectedCell {
+  background: var(--c-accent-soft);
+}
+
+/* --- Highlight Mark --- */
+.ProseMirror mark {
+  background: var(--c-accent-soft);
+  border-radius: 2px;
+  padding: 0.1em 0.2em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* --- Syntax Highlighting (Material Palenight-inspired) --- */
+.ProseMirror pre code .hljs-comment,
+.ProseMirror pre code .hljs-quote {
+  color: #676e95;
+  font-style: italic;
+}
+
+.ProseMirror pre code .hljs-keyword,
+.ProseMirror pre code .hljs-selector-tag,
+.ProseMirror pre code .hljs-tag {
+  color: #c792ea;
+}
+
+.ProseMirror pre code .hljs-string,
+.ProseMirror pre code .hljs-template-tag,
+.ProseMirror pre code .hljs-addition {
+  color: #c3e88d;
+}
+
+.ProseMirror pre code .hljs-number,
+.ProseMirror pre code .hljs-literal,
+.ProseMirror pre code .hljs-type,
+.ProseMirror pre code .hljs-params {
+  color: #f78c6c;
+}
+
+.ProseMirror pre code .hljs-built_in,
+.ProseMirror pre code .hljs-title,
+.ProseMirror pre code .hljs-section {
+  color: #82aaff;
+}
+
+.ProseMirror pre code .hljs-attr,
+.ProseMirror pre code .hljs-attribute,
+.ProseMirror pre code .hljs-variable {
+  color: #ffcb6b;
+}
+
+.ProseMirror pre code .hljs-name,
+.ProseMirror pre code .hljs-selector-id,
+.ProseMirror pre code .hljs-selector-class {
+  color: #f07178;
+}
+
+.ProseMirror pre code .hljs-deletion {
+  color: #ff5370;
+}
+
+.ProseMirror pre code .hljs-meta {
+  color: #89ddff;
+}
+
 /* --- Share Page Prose --- */
 .share-prose h1,
 .share-prose h2,

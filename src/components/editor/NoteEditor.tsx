@@ -4,11 +4,27 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Highlight from '@tiptap/extension-highlight';
+import Typography from '@tiptap/extension-typography';
+import { Table } from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableHeader from '@tiptap/extension-table-header';
+import TableCell from '@tiptap/extension-table-cell';
+import { BubbleMenu } from '@tiptap/extension-bubble-menu';
+import { common, createLowlight } from 'lowlight';
 import { useNotesStore } from '../../stores/notes';
 import { SyncService } from '../../services/sync';
 import NoteTitle from './NoteTitle';
 import ShareButton from '../ui/ShareButton';
 import VersionHistory from './VersionHistory';
+import BubbleToolbar from './BubbleToolbar';
+import SlashCommand from './slashCommandExtension';
+import { createRoot } from 'react-dom/client';
+
+const lowlight = createLowlight(common);
 
 export default function NoteEditor() {
   const [showHistory, setShowHistory] = useState(false);
@@ -16,21 +32,54 @@ export default function NoteEditor() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLoadingRef = useRef(false);
   const currentNoteIdRef = useRef(currentNoteId);
+  const bubbleElRef = useRef<HTMLDivElement | null>(null);
+  const bubbleRootRef = useRef<ReturnType<typeof createRoot> | null>(null);
 
   useEffect(() => {
     currentNoteIdRef.current = currentNoteId;
   }, [currentNoteId]);
 
+  // Create a persistent bubble menu element
+  if (!bubbleElRef.current) {
+    bubbleElRef.current = document.createElement('div');
+  }
+
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false,
+      }),
       Placeholder.configure({
-        placeholder: 'Start writing...',
+        placeholder: 'Type "/" for commands...',
       }),
       Image,
       Link.configure({
         openOnClick: false,
       }),
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+      }),
+      Highlight,
+      Typography,
+      Table.configure({
+        resizable: false,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      BubbleMenu.configure({
+        element: bubbleElRef.current,
+        shouldShow: ({ editor, state }) => {
+          if (editor.isActive('image')) return false;
+          const { from, to } = state.selection;
+          return from !== to;
+        },
+      }),
+      SlashCommand,
     ],
     content: '',
     editorProps: {
@@ -52,6 +101,20 @@ export default function NoteEditor() {
       }
     },
   });
+
+  // Render React toolbar into the bubble menu element
+  useEffect(() => {
+    if (!editor || !bubbleElRef.current) return;
+
+    if (!bubbleRootRef.current) {
+      bubbleRootRef.current = createRoot(bubbleElRef.current);
+    }
+    bubbleRootRef.current.render(<BubbleToolbar editor={editor} />);
+
+    return () => {
+      // Don't unmount on every re-render; the root persists
+    };
+  }, [editor]);
 
   useEffect(() => {
     if (!currentNoteId || !editor) return;
