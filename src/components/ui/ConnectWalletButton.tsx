@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { useAppKit, useAppKitAccount, useAppKitProvider } from '@reown/appkit/react';
 import { useAuthStore } from '../../stores/auth';
 import { useNotesStore } from '../../stores/notes';
 import { WalletService } from '../../services/wallet';
@@ -7,6 +9,10 @@ import { getAccountFromProvider } from '@aleph-sdk/ethereum';
 import type { NotesAggregate, EncryptedPayload } from '../../types';
 
 export default function ConnectWalletButton() {
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider('eip155');
+
   const {
     walletAddress,
     isConnecting,
@@ -20,51 +26,71 @@ export default function ConnectWalletButton() {
 
   const { loadFromAggregate, reset: resetNotes } = useNotesStore();
 
-  const handleConnect = async () => {
+  const initStartedRef = useRef(false);
+
+  // When wallet connects via AppKit, run the key derivation + Aleph init flow
+  useEffect(() => {
+    if (!isConnected || !address || !walletProvider || initStartedRef.current) return;
+    // Don't re-init if already connected to this address
+    if (walletAddress === address) return;
+
+    initStartedRef.current = true;
     setIsConnecting(true);
-    try {
-      const { address, signer } = await WalletService.connect();
-      setWalletAddress(address);
 
-      const signature = await WalletService.requestSignature(signer);
+    (async () => {
+      try {
+        setWalletAddress(address);
 
-      const key = await CryptoService.deriveKey(signature);
-      setEncryptionKey(key);
+        const signer = WalletService.getSigner(walletProvider);
+        const signature = await WalletService.requestSignature(signer);
 
-      const ephemeralPrivateKey = CryptoService.deriveEphemeralPrivateKey(signature);
-      const ephemeralAddr = await AlephService.initializeWithEphemeralKey(ephemeralPrivateKey, address);
-      setEphemeralAddress(ephemeralAddr);
+        const key = await CryptoService.deriveKey(signature);
+        setEncryptionKey(key);
 
-      // Authorize ephemeral key to write on behalf of main wallet
-      const mainAccount = await getAccountFromProvider(window.ethereum);
-      await AlephService.setupPermissions(mainAccount, ephemeralAddr);
+        const ephemeralPrivateKey = CryptoService.deriveEphemeralPrivateKey(signature);
+        const ephemeralAddr = await AlephService.initializeWithEphemeralKey(ephemeralPrivateKey, address);
+        setEphemeralAddress(ephemeralAddr);
 
-      const raw = await AlephService.fetchAggregate();
-      if (raw) {
-        const decrypted = await CryptoService.decrypt(raw as EncryptedPayload, key) as NotesAggregate;
-        loadFromAggregate(decrypted);
+        // Authorize ephemeral key to write on behalf of main wallet
+        const mainAccount = await getAccountFromProvider(walletProvider);
+        await AlephService.setupPermissions(mainAccount, ephemeralAddr);
+
+        const raw = await AlephService.fetchAggregate();
+        if (raw) {
+          const decrypted = await CryptoService.decrypt(raw as EncryptedPayload, key) as NotesAggregate;
+          loadFromAggregate(decrypted);
+        }
+
+        setIsInitialized(true);
+      } catch (err) {
+        console.error('Failed to initialize:', err);
+        resetAuth();
+        resetNotes();
+      } finally {
+        setIsConnecting(false);
+        initStartedRef.current = false;
       }
+    })();
+  }, [isConnected, address, walletProvider]);
 
-      setIsInitialized(true);
-    } catch (err) {
-      console.error('Failed to connect:', err);
+  // Handle disconnect from AppKit
+  useEffect(() => {
+    if (!isConnected && walletAddress) {
+      AlephService.reset();
       resetAuth();
       resetNotes();
-    } finally {
-      setIsConnecting(false);
+      initStartedRef.current = false;
     }
-  };
+  }, [isConnected]);
 
-  const handleDisconnect = () => {
-    AlephService.reset();
-    resetAuth();
-    resetNotes();
+  const handleClick = () => {
+    open();
   };
 
   if (walletAddress) {
     return (
       <button
-        onClick={handleDisconnect}
+        onClick={handleClick}
         className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-body rounded-lg border border-edge hover:border-edge-strong bg-surface hover:bg-hover transition-all duration-200"
       >
         <span className="w-2 h-2 rounded-full bg-accent" />
@@ -77,7 +103,7 @@ export default function ConnectWalletButton() {
 
   return (
     <button
-      onClick={handleConnect}
+      onClick={handleClick}
       disabled={isConnecting}
       className="relative px-4 py-2 text-[13px] font-medium font-body rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-50 transition-all duration-200 overflow-hidden"
     >

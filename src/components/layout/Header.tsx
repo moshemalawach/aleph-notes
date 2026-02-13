@@ -1,10 +1,24 @@
+import { useEffect, useState } from 'react';
 import { useNotesStore } from '../../stores/notes';
 import { useUIStore } from '../../stores/ui';
 import ConnectWalletButton from '../ui/ConnectWalletButton';
 
 export default function Header() {
-  const { settings, setSettings, isSaving } = useNotesStore();
+  const { settings, setSettings, saveStatus, setSaveStatus } = useNotesStore();
   const { toggleSidebar } = useUIStore();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (saveStatus === 'saving') {
+      setVisible(true);
+    } else if (saveStatus === 'saved') {
+      const timer = setTimeout(() => {
+        setVisible(false);
+        setSaveStatus('idle');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveStatus, setSaveStatus]);
 
   const toggleTheme = () => {
     const newTheme = settings.theme === 'dark' ? 'light' : 'dark';
@@ -32,10 +46,21 @@ export default function Header() {
             Aleph Notes
           </span>
         </div>
-        {isSaving && (
-          <div className="flex items-center gap-1.5 ml-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            <span className="text-xs text-ink-muted">Saving</span>
+        {visible && (
+          <div className={`flex items-center gap-1.5 ml-1 transition-opacity duration-300 ${saveStatus === 'saved' ? 'opacity-70' : 'opacity-100'}`}>
+            {saveStatus === 'saving' ? (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                <span className="text-xs text-ink-muted">Saving...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                <span className="text-xs text-ink-muted">Saved</span>
+              </>
+            )}
           </div>
         )}
       </div>

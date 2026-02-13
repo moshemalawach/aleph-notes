@@ -8,14 +8,14 @@ interface NotesState {
   currentNoteId: string | null;
   currentNoteContent: string | null;
   isLoading: boolean;
-  isSaving: boolean;
+  saveStatus: 'idle' | 'saving' | 'saved';
 
   setNotes: (notes: Record<string, NoteMetadata>) => void;
   setSettings: (settings: UserSettings) => void;
   setCurrentNoteId: (id: string | null) => void;
   setCurrentNoteContent: (content: string | null) => void;
   setIsLoading: (loading: boolean) => void;
-  setIsSaving: (saving: boolean) => void;
+  setSaveStatus: (status: 'idle' | 'saving' | 'saved') => void;
 
   updateNote: (id: string, updates: Partial<NoteMetadata>) => void;
   addNote: (note: NoteMetadata) => void;
@@ -39,14 +39,14 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   currentNoteId: null,
   currentNoteContent: null,
   isLoading: false,
-  isSaving: false,
+  saveStatus: 'idle',
 
   setNotes: (notes) => set({ notes }),
   setSettings: (settings) => set({ settings }),
   setCurrentNoteId: (id) => set({ currentNoteId: id }),
   setCurrentNoteContent: (content) => set({ currentNoteContent: content }),
   setIsLoading: (loading) => set({ isLoading: loading }),
-  setIsSaving: (saving) => set({ isSaving: saving }),
+  setSaveStatus: (status) => set({ saveStatus: status }),
 
   updateNote: (id, updates) =>
     set((state) => ({
@@ -85,6 +85,6 @@ export const useNotesStore = create<NotesState>((set, get) => ({
       currentNoteId: null,
       currentNoteContent: null,
       isLoading: false,
-      isSaving: false,
+      saveStatus: 'idle',
     }),
 }));
